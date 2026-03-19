@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  registry:
+    build: .
+    ports:
+      - "5001:5001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 5s
+      retries: 3
+
+  order-a:
+    build: .
+    command: python3 order_service.py 6001
+    environment:
+      - REGISTRY_URL=http://registry:5001
+    ports:
+      - "6001:6001"
+    depends_on:
+      registry:
+        condition: service_healthy
+
+  order-b:
+    build: .
+    command: python3 order_service.py 6002
+    environment:
+      - REGISTRY_URL=http://registry:5001
+    ports:
+      - "6002:6002"
+    depends_on:
+      registry:
+        condition: service_healthy
