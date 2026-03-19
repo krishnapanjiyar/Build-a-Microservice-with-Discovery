@@ -127,40 +127,4 @@ MicroserviceDiscovery/
 
 4. **On shutdown**, each service sends a deregister request so the registry immediately removes it (rather than waiting for heartbeat timeout).
 
-## Optional: Service Mesh Discovery (Istio / Linkerd)
 
-In production, a **service mesh** replaces custom registries with infrastructure-level discovery:
-
-```
-App → Sidecar Proxy → Service Mesh Control Plane
-```
-
-**Benefits over custom registry:**
-- **Traffic routing** — canary deployments, A/B testing, circuit breaking
-- **Observability** — distributed tracing, metrics, access logs for free
-- **Security** — mutual TLS between all services, zero-trust networking
-- **No code changes** — discovery and load balancing handled by sidecar
-
-**Istio example:**
-```yaml
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: order-service
-spec:
-  hosts: ["order-service"]
-  http:
-    - route:
-        - destination:
-            host: order-service
-            subset: v1
-          weight: 90
-        - destination:
-            host: order-service
-            subset: v2
-          weight: 10
-```
-
-## License
-
-Educational project — use and modify freely.
